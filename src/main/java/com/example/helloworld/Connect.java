@@ -40,10 +40,14 @@ public class Connect {
             throw new RuntimeException(e);
         }
     }
-    public void insertTable(Connection con,String dd)  throws SQLException{
-        String d=dd;
+    public void insertTable(Connection con,String name)  throws SQLException{
+        /*
         String query = "insert into data (dd)\n" +
-                "VALUES ('"+d+"');";
+                //"VALUES ('"+d+"');";
+
+         */
+        String query="INSERT INTO data(dd)"+
+                "VALUES ('"+name+"')";
         try (Statement stmt = con.createStatement()) {
             int rs = stmt.executeUpdate(query);
             con.close();
@@ -52,10 +56,13 @@ public class Connect {
             throw new RuntimeException(e);
         }
     }
-    public void UpdateTable(Connection con,int eid)  {
+    public void UpdateTable(Connection con,int eid,String TextToUp)  {
         //String query1 = "UPDATE data" + "SET dd='hhhhhhh' + "+"WHERE ID=4";
-        //int t=eid;
-        String query = "update data SET dd= 'vnjdv' where id =4";
+        //String query = "update data SET dd= 'vnjdv' where id =4";
+        String qw= Integer.toString(eid);
+        String query=String.format("UPDATE \"data\""+
+                "SET dd='%s'"+
+                "WHERE id= %s;",TextToUp,Integer.toString(eid));
 
         try (Statement stmt = con.createStatement()) {
             int rs = stmt.executeUpdate(query);
