@@ -47,9 +47,12 @@ public class Connect {
 
          */
         String query="INSERT INTO data(dd)"+
-                "VALUES ('"+name+"')";
+                "VALUES (?)";
+        PreparedStatement statement =con.prepareStatement(query);
+        statement.setString(1,name);
+
         try (Statement stmt = con.createStatement()) {
-            int rs = stmt.executeUpdate(query);
+            statement.executeUpdate();
             con.close();
         } catch (SQLException e) {
             System.out.printf("Error!!");
@@ -60,15 +63,23 @@ public class Connect {
         //String query1 = "UPDATE data" + "SET dd='hhhhhhh' + "+"WHERE ID=4";
         //String query = "update data SET dd= 'vnjdv' where id =4";
         String qw= Integer.toString(eid);
+        /*
         String query=String.format("UPDATE \"data\""+
                 "SET dd='%s'"+
                 "WHERE id= %s;",TextToUp,Integer.toString(eid));
+        */
+
 
         try (Statement stmt = con.createStatement()) {
-            int rs = stmt.executeUpdate(query);
+            String sqlUpdate = "UPDATE data\n" +
+                    "\tSET  dd= ?" +
+                    "\tWHERE id = ?;";
+            PreparedStatement statement =con.prepareStatement(sqlUpdate);
+            statement.setString(1,TextToUp);
+            statement.setInt(2,eid);
+            statement.executeUpdate();
             con.close();
         } catch (SQLException e) {
-            System.out.printf("Error!!");
             throw new RuntimeException(e);
         }
     }

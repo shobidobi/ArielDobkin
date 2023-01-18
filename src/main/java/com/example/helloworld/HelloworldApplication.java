@@ -16,8 +16,8 @@ public class HelloworldApplication {
     public static void main(String[] args) throws SQLException {
         Connect con = new Connect();
         con.viewTable(con.connect());
-        //con.insertTable(con.connect(), "new");
-        con.UpdateTable(con.connect(), 4,"upd");
+        con.insertTable(con.connect(), "new");
+        con.UpdateTable(con.connect(), 4,"acnjjn");
         con.DeleteTable(con.connect());
         //SpringApplication.run(HelloworldApplication.class, args);
         System.out.println("Hello world");
