@@ -8,8 +8,6 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class Connect {
-    //private static Object JDBCTutorialUtilities;
-
     public  Connection connect(){
         String jdbcURL = "jdbc:postgresql://localhost:5432/Try";
         String userName = "postgres";
@@ -34,55 +32,86 @@ public class Connect {
         }
         return true;
     }
-    public void Link_information(Connection con, ArrayList<EnTable> data) throws SQLException  {
+
+    public void Link_information(Connection con, ArrayList<EnTable> data,int flag) throws SQLException  {
         String query = "select * from data";
+
         try (Statement stmt = con.createStatement()) {
             ResultSet rs = stmt.executeQuery(query);
-            int i=0;
+            int j=0;
             while (rs.next()) {
                 String dd = rs.getString("dd");
                 int ID = rs.getInt("id");
-                System.out.println(dd + ", " +ID);
+                //System.out.println(dd + ", " +ID);
                 if ((inList(ID,data))) {
                     data.add(new EnTable(ID,dd));
                 }
-                if ((i<data.size())&&((data.get(i).getId())==0)){
-                    data.get(i).setId(ID);;
+                if ((j<data.size())&&((data.get(j).getId())==0&&flag==1)){
+                    data.get(j).setId(ID);
                 }
-                if ((i<data.size())&&data.get(i).getDd()!=dd){
-                    data.get(i).setDd(dd);
+                if ((j<data.size())&&data.get(j).getDd()!=dd){
+                    data.get(j).setDd(dd);
                 }
-                i++;
+                j++;
             }
-            con.close();
+            int s=data.size();
+            for (int i = 0; i < s; i++) {
+                I(con,(data.get(i).getId()),(data.get(i).getDd()),data);
+                //System.out.println("1");
+            }
         } catch (SQLException e) {
             System.out.printf("Error!!");
             throw new RuntimeException(e);
         }
-        for (int i = 0; i < data.size(); i++) {
-            if ((data.get(i).getId())==0){
-                insertTable(connect(),(data.get(i).getDd()),data);
-            }
-        }
+
+        con.close();
     }
-    public void viewTable(Connection con) throws SQLException  {
+    public void checkVaild(int where_id,ArrayList<EnTable> data,String name) throws SQLException {
+        //ArrayList<EnTable> d=viewTable(connect(),data);
+        for (EnTable e:data) {
+            if (e.getId()==where_id){return;}
+        }
+        insertTable(connect(),name,data,0);
+    }
+    public void I(Connection con,int id,String name,ArrayList<EnTable> data){
+        int flag=0;
         String query = "select * from data";
         try (Statement stmt = con.createStatement()) {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 String dd = rs.getString("dd");
                 int ID = rs.getInt("id");
-                System.out.println(dd + ", " +ID);
-                //data.add(new EnTable(ID,dd));
+                //System.out.println(dd + ", " +ID);
+                if (ID==id){return;}
             }
+            insertTable(con,name,data,0);
             con.close();
+            //return data;
         } catch (SQLException e) {
             System.out.printf("Error!!");
             throw new RuntimeException(e);
         }
-    }
 
-    public void insertTable(Connection con,String name, ArrayList<EnTable> data)  throws SQLException{
+    }
+    public ArrayList<EnTable> viewTable(Connection con, ArrayList<EnTable> data) throws SQLException  {
+        String query = "select * from data";
+        try (Statement stmt = con.createStatement()) {
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                String dd = rs.getString("dd");
+                int ID = rs.getInt("id");
+                //System.out.println(dd + ", " +ID);
+                data.add(new EnTable(ID,dd));
+            }
+            con.close();
+            return data;
+        } catch (SQLException e) {
+            System.out.printf("Error!!");
+            throw new RuntimeException(e);
+        }
+
+    }
+    public void insertTable(Connection con,String name, ArrayList<EnTable> data,int flag)  throws SQLException{
         /*
         String query = "insert into data (dd)\n" +
                 //"VALUES ('"+d+"');";
@@ -94,7 +123,10 @@ public class Connect {
         statement.setString(1,name);
         try (Statement stmt = con.createStatement()) {
             statement.executeUpdate();
-            Link_information(connect(),data);
+            if (flag==1){Link_information(connect(),data,0);}
+            else {Link_information(connect(),data,1);}
+            //li(con,data);
+            statement.close();
             con.close();
         } catch (SQLException e) {
             System.out.printf("Error!!");
@@ -115,8 +147,7 @@ public class Connect {
             statement.setString(1,TextToUp);
             statement.setInt(2,eid);
             statement.executeUpdate();
-            Link_information(con,data);
-
+            Link_information(con,data,0);
             con.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -130,7 +161,8 @@ public class Connect {
             PreparedStatement statement =con.prepareStatement(query);
             statement.setString(1,str);
             statement.executeUpdate();
-            data.indexOf(str);
+            //data.remove(data.indexOf(str));
+
             con.close();
         } catch (SQLException e) {
             System.out.printf("Error!!");
@@ -138,4 +170,3 @@ public class Connect {
         }
     }
 }
-
